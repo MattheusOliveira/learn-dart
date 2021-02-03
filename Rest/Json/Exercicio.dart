@@ -50,12 +50,17 @@ void conversao() {
           "email": "BRUNO.GFJ@gmail.com"
         }
   ''';
-
+  //DECODE
   Map<String, dynamic> parsedJson = jsonDecode(json);
   print(parsedJson);
 
   Pessoa pessoa = Pessoa.fromJson(parsedJson);
-  print(pessoa);
+  print(pessoa.faculdades.map((e) => e.instituicao).toList());
+
+  //ENCODE
+  Map<String, dynamic> map = pessoa.toJson();
+  String j = jsonEncode(map);
+  print(j);
 }
 
 void main() {
@@ -104,14 +109,14 @@ class Pessoa {
       sexo: json['sexo'],
       cartoes: json['cartoes'],
       mae: json['mae'],
-      documentos: json['documentos'],
-      treinos :json['treinos'],
+      documentos: Documentos.fromJson(json['documentos']),
+      treinos :json['treinos'].cast<String>(),
       sangue: json['sangue'],
       emprego: json['emprego'],
       nascimento: json['nascimento'],
       telefone: json['telefone'],
-      faculdades: json['faculdades'],
-      endereco: json['endereco'],
+      faculdades: (json['faculdades'] as List).map((e) => Faculdade.fromJson(e)).toList(),
+      endereco: Endereco.fromJson(json['endereco']),
       email: json['email'],
       dependentes: json['dependentes'],
     );
