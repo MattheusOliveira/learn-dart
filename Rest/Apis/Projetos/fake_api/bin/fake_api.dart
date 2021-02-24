@@ -1,10 +1,11 @@
 //fake API: https://jsonplaceholder.typicode.com/
 import 'dart:convert';
+import 'package:fake_api/models/Countries.dart';
 import 'package:fake_api/models/People.dart';
 import 'package:fake_api/models/Posts.dart';
+import 'package:fake_api/models/Usa.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
-
 
 import 'package:fake_api/models/Users.dart';
 //video 12:17
@@ -161,22 +162,73 @@ jsonDelete() async {
 }
 
 dioRequest() async {
-  const url ='https://run.mocky.io/v3/d224a724-7f56-4629-ae94-e6b5455af293';
+  const url = 'https://run.mocky.io/v3/d224a724-7f56-4629-ae94-e6b5455af293';
   BaseOptions options = new BaseOptions(baseUrl: url);
-  
+
   Dio dio = new Dio(options);
   var response = await dio.get('');
   print('data: ${response.data}');
 
   //var parsedJson = jsonDecode(response.data);
-  //print('parsed: $parsedJson'); 
+  //print('parsed: $parsedJson');
   //A lib Dio já retorna um Map ou List<Map> não precisando efetuar o decode
   Employer employer = Employer.fromJson(response.data);
   print(employer.data.map((e) => e.id).toList());
 
-  Map<String,dynamic> desserializacao = employer.toJson();
+  Map<String, dynamic> desserializacao = employer.toJson();
   var json = jsonEncode(desserializacao);
   print('json: $json');
+}
+
+covidApi() async {
+  const url = 'https://corona.lmao.ninja/v2/countries?yesterday&sort';
+  try {
+    var response = await http.get(url);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      List<dynamic> jsonParsed = jsonDecode(response.body);
+      print('jsonParsed: $jsonParsed');
+
+      var objeto = Countries.fromJson(jsonParsed);
+      objeto.countries.map((e) {
+        if (e.deathsPerOneMillion.runtimeType == double) {
+          print(e.country);
+        }
+      }).toList();
+      //print('countries: $countries');
+
+      List<dynamic> map = objeto.toJson();
+
+      String json = jsonEncode(map);
+      print('jsonEncode: $json');
+    }
+  } catch (e) {
+    print('error: $e');
+  }
+}
+
+usaApi() async {
+  var url = 'https://datausa.io/api/data?drilldowns=Nation&measures=Population';
+
+  try {
+    var response = await http.get(url);
+
+    if(response.statusCode == 200 || response.statusCode == 201) {
+      //print('response ${response.body}');
+      
+      var objeto = jsonDecode(response.body);
+      
+      Usa usa = Usa.fromJson(objeto);
+
+      print('usa with decode: ${usa.sources.map((e) => e.measures).toList()}');
+      print('usa with decode: ${usa.sources.map((e) => e.annotations.table_id).toList()}');
+    }
+
+  } catch(exception, stackTrace) {
+    print('exception: $exception');
+    print('stackTrace: $stackTrace');
+  }
+
 }
 
 void main() {
@@ -187,5 +239,11 @@ void main() {
   //jsonDelete();
 
   //Dio
-  dioRequest();
+  //dioRequest();
+
+  //Covid 19
+  //covidApi();
+
+  //EUA DATA
+  usaApi();
 }
