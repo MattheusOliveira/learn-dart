@@ -222,6 +222,11 @@ usaApi() async {
 
       print('usa with decode: ${usa.sources.map((e) => e.measures).toList()}');
       print('usa with decode: ${usa.sources.map((e) => e.annotations.table_id).toList()}');
+    
+
+      var json = usa.toJson();
+      var parse = jsonEncode(json);
+      print('parse: $parse');
     }
 
   } catch(exception, stackTrace) {
@@ -230,7 +235,7 @@ usaApi() async {
   }
 
 }
-
+ 
 void main() {
   //jsonGet();
   //jsonPost();
